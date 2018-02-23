@@ -1,5 +1,6 @@
 //小鸟类
 import {Sprite} from '../base/Sprite.js'
+import {DataStore} from '../base/DataStore.js'
 export class Birds extends Sprite {
     constructor() {
         const image = Sprite.getImage('birds');
@@ -13,9 +14,9 @@ export class Birds extends Sprite {
         this.clippingY = [10, 10, 10]; //上下单边距10
         this.clippingWidht = [34, 34, 34]; //小鸟宽度34
         this.clippingHeight = [24, 24, 24]; //鸟高度24
-        const birdX = window.innerWidth / 4;
+        const birdX = DataStore.getInstance().canvas.width / 4;
         this.birdsX = [birdX, birdX, birdX];
-        const birdY = window.innerHeight / 2;
+        const birdY = DataStore.getInstance().canvas.height / 2;
         this.birdsY = [birdY, birdY, birdY];
         const birdWidth = 34;
         this.birdsWidth = [birdWidth, birdWidth, birdWidth];
