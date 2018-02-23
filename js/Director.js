@@ -17,8 +17,8 @@ export class Director {
     }
 
     createPencil() {
-        const minTop = window.innerHeight / 8;
-        const maxTop = window.innerHeight / 2;
+        const minTop = DataStore.getInstance().canvas.height / 8;
+        const maxTop = DataStore.getInstance().canvas.height / 2;
         const top = minTop + Math.random() * (maxTop - minTop);
         this.dataStore.get('pencils').push(new UpPencil(top));
         this.dataStore.get('pencils').push(new DownPencil(top));
@@ -35,8 +35,8 @@ export class Director {
     //是否和铅笔撞击
     static isStrike(bird, pencil) {
         let s = false;
-        if(bird.top>pencil.bottom || bird.bottom<pencil.top ||
-            bird.right<pencil.left || bird.left>pencil.right){
+        if (bird.top > pencil.bottom || bird.bottom < pencil.top ||
+            bird.right < pencil.left || bird.left > pencil.right) {
             s = true;
         }
         return !s;
@@ -47,6 +47,7 @@ export class Director {
         const birds = this.dataStore.get('birds');
         const land = this.dataStore.get('land');
         const pencils = this.dataStore.get('pencils');
+        const score = this.dataStore.get('score');
         if (birds.birdsY[0] + birds.birdsHeight[0] >= land.y) {
             console.log('撞击地板');
             this.isGameOver = true;
@@ -70,11 +71,19 @@ export class Director {
                 right: pencil.x + pencil.width,
             };
 
-            if(Director.isStrike(birdsBorder, pencilBorder)){
+            if (Director.isStrike(birdsBorder, pencilBorder)) {
                 console.log('撞击到铅笔');
                 this.isGameOver = true;
                 return;
             }
+        }
+        //加分
+        if (birds.birdsX[0] > pencils[0].x + pencils[0].width && score.isScore) {
+            wx.vibrateLong({success: function () {
+                console.log('+1')
+            }});
+            score.scoreNumber++;
+            score.isScore = false;
         }
     }
 
@@ -86,21 +95,25 @@ export class Director {
             if (pencils[0].x + pencils[0].width <= 0 && pencils.length === 4) {
                 pencils.shift();
                 pencils.shift();
+                this.dataStore.get('score').isScore = true;
             }
-            if (pencils[0].x <= (window.innerWidth - pencils[0].width) / 2 && pencils.length === 2) {
+            if (pencils[0].x <= (DataStore.getInstance().canvas.width - pencils[0].width) / 2 && pencils.length === 2) {
                 this.createPencil();
             }
             this.dataStore.get('pencils').forEach(function (value) {
                 value.draw();
             });
             this.dataStore.get('land').draw();
+            this.dataStore.get('score').draw();
             this.dataStore.get('birds').draw();
             let timer = requestAnimationFrame(() => this.run()); //用于动画，刷新率有浏览器决定，性能好
             this.dataStore.put('timer', timer);
         } else {
             console.log('GameOver');
+            this.dataStore.get('startButton').draw();
             cancelAnimationFrame(this.dataStore.get('timer'));
             this.dataStore.destory();
+            wx.triggerGC();
         }
     }
 }
