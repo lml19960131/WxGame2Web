@@ -8,8 +8,8 @@
     });
     ws.on('connection', function (ws) {
         console.log('假设连接了客户端');
-        ws.on('message', function () {
-            
+        ws.on('message', function (message) {
+            console.log(message);
         })
     })
 })();
