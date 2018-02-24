@@ -39,6 +39,8 @@ export class Main {
         // example.login(); 获取登陆时的信息如code用于转第三方或者支付
         // example.getSetting(); 获取个人配置信息
         // example.httpExample(); 获取HTTP请求数据
+        // example.socketExample();
+        example.download();
         this.init();
     }
 
